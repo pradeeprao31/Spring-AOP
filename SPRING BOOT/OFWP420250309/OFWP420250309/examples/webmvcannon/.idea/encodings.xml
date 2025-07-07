@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/BusGeneWeb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/BusGeneWeb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MVCConfigurerWeb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MVCConfigurerWeb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ReturningViewWeb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ReturningViewWeb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VoidWeb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/VoidWeb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/firstmvcannon/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/firstmvcannon/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/forwardweb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/forwardweb/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

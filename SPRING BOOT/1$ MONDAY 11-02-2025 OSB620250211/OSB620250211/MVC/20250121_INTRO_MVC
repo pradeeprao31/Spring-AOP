@@ -1,0 +1,312 @@
+Introduction
+-------------
+Spring WebMVC is an module provided by the spring developers to support building web applications aspart of the Spring Framework. By then the spring was introduced there are lot of existing webmvc frameworks are there in the market like
+  1. Servlet/Jsp
+	2. Struts Framework
+	3. JSF
+	etc
+So spring developers never had a plan of including web mvc module aspart of the framework, later on by identifying/understanding the limitations with most of the existing web mvc frameworks, spring developers decided to have an webmvc module that eliminates or addresses most of the limitations that are there with existing frameworks.
+	
+1. Servlet/Jsp
+Servlets/Jsp are apis. Apis will not provide boiler-plate logic, developers has to write lot of boiler-plate logic in building the web applications like
+	1. gathering the request data within a servlet
+	2. converting the presentation-tier representation format data into business-tier format
+	3. wrapping the data into pojo class, so that it can be passed between the layers of the application
+	etc
+due to this the amount of code we write in building the web application will be more that creates lot of problems like
+	1. The time required for developing the application is more
+	2. more number of man-power resources are required in building the application
+	3. cost will be high
+	4. chances of bugs will be more
+overall results in delay in developing and delivering the application to the customer/enduser
+
+2. Struts Framework
+The Struts Framework has addressed most of the problems that we face while building the web applications using the servlet/jsps and has emerged as the alternate option in building the web applications aspart of the java platform. But over the period of time, while using the structs framework people started discovering the limitations or drawbacks with structs framework as below
+	1. struts framework supports only developing web aspects of an web application (presentation-tier layer only), but typically in an web application we have business and persistence aspects as well, which are not supported by struts. So it is not an end-to-end application development framework. For building business / persistence aspects the developers/people has to rely on other options in the market
+	2. struts framework has been poorly designed in handling requirements of an typical web application. struts always assumes that a request to the application will be received only through form submission, due to this the Action class always takes ActionForm object as an input. But in reality there are many forms of sending the request to the application like clicking on a hyperlink in the webpage or entering the URL in browser address bar etc. In such case no data will be send to the server, but still the Action class expects ActionForm as an input
+As described above there are many more limitations with struts framework
+		
+As said earlier, to overcome all of the dis-advantages with the existing web application technologies/frameworks, spring developers has introduced spring webmvc module.		
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Let us explore or understand what are the different types of boiler-plate logic we typically write while building an web application using servlet/jsp?
+1. Request wrapping
+Reading the data from the request and binding them to an java object is called "request wrapping".
+	
+@WebServlet(“/newPatientForm”)
+class PatientFormRegistrationServlet extends HttpServlet {
+  public void service(req, resp) {
+    String patientName = req.getParameter(“patientName”);
+    String dob = req.getParameter(“dob”);
+    String gender = req.getParameter(“gender”);
+    String mobileNo = req.getParameter(“mobileNo”);
+    String emailAddress = req.getParameter(“emailAddress”);
+    String streetAddress = req.getParameter(“streetAddress”);
+    String city = req.getParameter(“city”);
+    String state = req.getParameter(“state”);
+    String zip = req.getParameter(“zip”);
+    String country = req.getParameter(“country”);
+
+    PatientForm form = new PatientForm();
+    form.setPatientName(patientName);
+    form.setDob(dob);
+    form.setGender(gender);
+    form.setMobileNo(mobileNo);
+    form.setEmailAddress(emailAddress);
+    form.setStreetAddress(streetAddress);
+    form.setCity(city);
+    form.setState(state);
+    form.setZip(zip);
+    form.setCountry(country);
+
+    PatientManagementService pmService = new PatientManagementService();
+    int patientNo = pmService.newPatient(form);
+
+    req.setAttribute(“patientNo”, patientNo);
+    req.getRequestDispatcher(“/new-patient-success.jsp”).forward(req, resp);
+    
+  }
+}
+
+
+To avoid duplicating the code in extracting the request data and wrap into PatientForm object we can write the code in an Wrapper class that extracts the data from request and bind into PatientForm object
+	
+interface RequestWrapper<T> {
+	T wrap(HttpRequest request);
+}	
+	
+class PatientFormRequestWrapper implements RequestWrapper<PatientForm> {
+	PatientForm wrap(HttpServletRequest req) {
+		String patientName = req.getParameter(“patientName”);
+    String dob = req.getParameter(“dob”);
+    String gender = req.getParameter(“gender”);
+    String mobileNo = req.getParameter(“mobileNo”);
+    String emailAddress = req.getParameter(“emailAddress”);
+    String streetAddress = req.getParameter(“streetAddress”);
+    String city = req.getParameter(“city”);
+    String state = req.getParameter(“state”);
+    String zip = req.getParameter(“zip”);
+    String country = req.getParameter(“country”);
+
+    PatientForm form = new PatientForm();
+    form.setPatientName(patientName);
+    form.setDob(dob);
+    form.setGender(gender);
+    form.setMobileNo(mobileNo);
+    form.setEmailAddress(emailAddress);
+    form.setStreetAddress(streetAddress);
+    form.setCity(city);
+    form.setState(state);
+    form.setZip(zip);
+    form.setCountry(country);
+		
+		return form;
+	}
+}
+
+class AppointmentFormRequestWrapper implements RequestWrapper<AppointmentForm> {
+	public AppointmentForm wrap(HttpServletRequest req) {
+		String patientNo = req.getParameter(“patientNo”);
+    String mobileNo = req.getParameter(“mobileNo”);
+    String doctorNo = req.getParameter(“doctorNo”);
+    String dateTime = req.getParameter(“appointmentDateTime”);
+    String reason = req.getParameter(“reason”);
+    String remarks = req.getParameter(“remarks”);
+
+    AppointmentForm form = new AppointmentForm();
+    form.setPatientNo(patientNo);
+    form.setMobileNo(mobileNo);
+    form.setDoctorNo(doctorNo);
+    form.setAppointmentDateTime(dateTime);
+    form.setReason(reason);
+    form.setRemarks(remarks);
+		
+		return form;
+	}
+}	
+
+Now upon receiving the request, the servlet has to make use of the RequestWrapper in wrapping the data into corresponding form object
+
+@WebServlet(“/newPatientForm”)
+class PatientFormRegistrationServlet extends HttpServlet {
+  public void service(req, resp) {
+    GenericRequestWrapper reqWrapper = new GenericRequestWrapper();
+		PatientForm form = reqWrapper.wrap(req, PatientForm.class);
+		
+    PatientManagementService pmService = new PatientManagementService();
+    int patientNo = pmService.newPatient(form);
+
+    req.setAttribute(“patientNo”, patientNo);
+    req.getRequestDispatcher(“/new-patient-success.jsp”).forward(req, resp);    
+  }
+}
+	
+
+#framework	
+// convention over configuration
+class GenericRequestWrapper {
+	Object wrap(HttpServletRequest req, Class<?> classType) {
+		Object obj = null;
+		Map<String, String[]> paramMap = null;
+		
+		obj = classType.newInstance(); // new object of that class type
+		paramMap = req.getParameterMap();
+		
+		// for eg.. patientName, ["john"]
+		paramMap.forEach((paramName, paramValue)-> {
+			
+			// if attribute with the parameterName present in the class
+			// patientName - setPatientName
+			if(classType.getDeclaredField(paramName) != null) {
+				String setterName = "set"+paramName.charAt(0).toUpperCase() + paramName.subString(1);
+				Method setterMethod = classType.getDeclaredMethod(setterName, new Class<?>[]{String.class});
+				setterMethod.invoke(obj, paramValue[0]);
+			}
+		});
+		return obj;
+	}
+}
+
+@WebServlet(“/bookAppointment”)
+class BookAppointmentServlet extends HttpServlet {
+  public void service(req, resp) {
+    GenericRequestWrapper reqWrapper = new GenericRequestWrapper();
+		AppointmentForm form = reqWrapper.wrap(req, AppointmentForm.class);
+		
+
+    AppointmentManagementService amService = new AppointmentManagementService();
+    int appointmentNo = amService.bookAppointment(form);
+    // forward to appointment-details.jsp
+  }
+}
+-----------------------------------------------------------------------------------------------------------------------------------
+
+// base class
+abstract class Validator {
+	private Properties errors;
+	
+	public Validator() {
+		errors = new Properties();
+	}
+	
+	public abstract validate(Object obj);
+	
+	public void rejectValue(String propertyName, String errorMessage) {
+		errors.put(propertyName, errorMessage);
+	}
+	
+	public boolean hasErrors() {
+		return errors.size() > 0 : true ? false;
+	}
+	
+	public Properties getErrors() {return errors;}
+}
+-------------------------------------------------------------------------------------------------------------------------------------
+Front Controller design pattern
+Front controller acts as an single entrypoint or gateway of receiving all the requests into the application. Since all the requests are being recieved by the front controller we can have central control over allowing the requests into the application. 
+	
+There are certain mandatory pre/post activities that needs to be applied for each and every request that comes into the application like
+	1. http logging
+	2. http monitoring
+	3. ip whitelising
+	4. request wrapping
+	5. form handling
+etc
+
+the pre-processing logic needs be applied before the actual processing of the request takes place, similar there are few post-processing logics that needs to be applied upon completing the actual processing of the request
+
+since these mandatory activities are common/mandatory across all of the requests of the application, we can manage them in applying for all the requests within the front controller.
+spring mvc architechture
+
+	
+
+
+
+	
+	
+	
+	
+	
+
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

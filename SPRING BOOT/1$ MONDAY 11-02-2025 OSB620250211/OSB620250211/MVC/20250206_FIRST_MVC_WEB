@@ -1,0 +1,115 @@
+1. configure DispatcherServlet aspart of web.xml in our application
+
+web.xml
+-------
+<servlet>
+	<servlet-name>dispatcher</servlet-name>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+	<servlet-name>dispatcher</servlet-name>
+	<url-pattern>*.htm</url-pattern>
+</servlet-mapping>
+
+during the time of deployment of the application (given: if load-on-startup is configured) or at the first-time in sending the request to the application, the object of the DispatcherServlet will be instantiated.
+		
+While creating the object of DispatcherServlet the servlet container will call init() method ontop of it asking the dispatcher servlet to perform initialization operation if any.
+		
+Within the init() method of the DispatcherServlet, it looks for a spring bean configuration file under /WEB-INF/ directory only with default name as <servlet-name>-servlet.xml. if the file is not found, it throws an exception failing the initialization or deployment of the application
+
+if the spring bean configuration file is found, then it instantiates the ioc container with that configuration file and holds the ioc container object with it.
+
+2. Controler 
+upon receiving the request, the request-specific logic that needs to be applied in processing the request will be part of Controller. We cannot write any class and call it as an controller class, the spring mvc has provided an standard/pre-defined interface from which we need to implement in writing the Controller class
+	
+interface Controller {
+	ModelAndView handlRequest(HttpServletRequest, HttpServletResponse);
+}	
+
+class ViewHomeController implements Controller {
+	ModelAndView handlRequest(HttpServletRequest, HttpServletResponse) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("home");
+		return mav;
+	}
+}
+
+
+<bean id="viewHomeController" class="ViewHomeController"/>
+
+3. HandlerMapping
+HandlerMapping helps the DispatcherServlet in identifying the appropriate controller that needs to be used in processing the request. since for each requestType the respective controller is written by developer, its the responsiblity of the developer to write HandlerMapping class in mapping the request to the controller
+	
+since the Handler mapping is being called by the DispatcherServlet, we cannot write any class and plugin as HandlerMapping class asking DispatcherServlet to call it. The spring mvc has provided an standard interface that we need implement in writing the HandlerMapping implementation class
+	
+interface HandlerMapping {
+	HandlerExecutionChain getHandler(HttpServletRequest req);
+}
+
+since every spring webmvc application requires an implementation of HandlerMapping interface that maps the request to the Controller class, spring mvc itself has provided multiple implementations of the HandlerMapping interface that we can directly use in our application unless we have specific way of mapping the request to the Controller.
+	
+One such implementation of HandlerMapping is SimpleUrlHandlerMapping. it has properties collection attribute called "mappings" into which we can populate all the urls and the respective controllers to whom the request should be dispatched.
+	
+<bean id="hm" class="SimpleUrlHandlerMapping">
+	<property name="mappings">
+		<props>
+			<prop key="/home.htm">viewHomeController</prop>
+		</props>
+	</property>
+</bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

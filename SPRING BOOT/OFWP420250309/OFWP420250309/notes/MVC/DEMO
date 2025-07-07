@@ -1,0 +1,223 @@
+spring boot + microservices
+Timings: Regular: 6:10 am - 7:10 am [Saturdays / Sundays: 7:10 am - 8:10 am] #evenings [6:30 pm - 7:30 pm or 7:30 pm - 8:30 pm]
+Fee: 8k
+duration: mvc: 20/25 days, spring boot: 30 days, microservices: 25 days [3/4 months]
+Notes: on weekly the live running notes including the examples will be shared with the students
+No videos, no recordings, no youtube
+Incase of personal emergency / medical reasons the class would be recorded and shared with the students personally.
+	
+Pre-requisite:
+1. Spring Framework 
+	1.1 core (annotation)
+	1.2 aop
+	1.3 jdbc (basics)
+	1.4 tx (basics: @Transactional)
+	
+2. Hibernate / Jpa
+3. Restful services (jaxrs api) (Principles and basic programming)
+4. Database (oracle or mysql or postgres)	
+---------------------------------------------------------------------------------------------------------------------------------------------------Course Content
+
+1. Spring MVC (Web & Integration-tier) (25 days)
+1.1 MVC Flow and Internal components
+1.2 Front controller design pattern
+1.3 DispatcherServlet (configuration options [xml-based , annotation-driven*])
+1.4 Types of controller
+1.5 View Resolvers
+1.6 Handling Mappings
+1.7 Handler Interceptors
+1.8 View (pdf/xls)
+1.9 Field Formatters
+1.9 Message Converters
+1.10 Java Bean Validation api
+1.11 	Spring Web MVC + Java Bean Validation api
+1.12 Spring Webmvc Internationalization
+
+2. Spring Restful services (Web Client (Reactive/Non-Reactive) / RestTemplate) (7 days)
+
+3. Spring Datajpa (spring orm / no hibernate or jpa directly) (without springboot) (10-12 days)
+3.1 What is datajpa, why it has been introduced?
+3.2 How does runtime proxies works, why we need them?
+3.3 How does datajpa uses the runtime proxies?
+3.5 Repositories, types of repositories
+3.6 Jpa Queries 
+	1. derived queries
+	2. declared queries
+3.7 Projections
+	1. Interface-based projection
+	2. Class-based projection
+	3. Dynamic projection	
+	
+4. Spring boot (1 months, 10 days)
+1. Introduction to spring boot
+2. Features of spring boot
+	1. AutoConfigurations
+	2. Starter dependencies
+	3. Actuator 
+	4. DevTools
+	5. Embedded Servlet containers
+3. Spring boot application, how does it internally works?
+4. How many ways to setup or create an spring boot project, what are those?
+5. @ConfigurationProperties
+6. Spring boot profiles
+7. Spring boot Listeners
+8. SpringApplicationInitializer
+9. CommandlineRunners & ApplicationRunners
+10. Spring Mvc + boot
+	1. How does embedded servlet containers works?
+	2. Internal flow of spring mvc application + boot
+	3. customizing the embedded servlet containers (configuration + programmatically)
+11. spring boot banner
+12. Fluent Builder Api
+13. Spring Boot Executable Jar and Boot Executable war
+14. Spring boot exitcode
+15. Actuator Endpoints
+16. Devtools
+17. How to create our own auto-configurations and starter dependencies
+
+5. Spring security (10 days)
+	1. web application security (basic auth, form-based auth)
+	2. oauth security
+	
+6. Microservices (25-30 days)
+Spring Cloud
+1. Cloud Config Server
+2. Cloud Config Client
+
+Spring Microservices
+1. What are microservices, why do we need to develop applications based on microservices architecture?
+2. Monolithic vs microservices 
+3. How to implement microservices are different stack of technologies (architectural) (java microservices stack & java + devops microservices)
+4. Eureka server (discovery registry)	
+5. spring cloud loadbalancer (Ribbon: deprecated)
+6. Feign client api
+7. spring circuit breaker (Hystrix [deprecated]) / Resilience4j
+	1. Rate Limiter
+	2. Circuit breaker
+8. spring cloud gateway 
+9. Microservices design patterns
+	1. Api Gateway
+	2. CQRS (example)
+	3. Service Modularity patterns
+		1. service per responsibility
+		2. service per database
+		3. service per usecase
+	4. saga design pattern (an example)
+		1. Choreography saga
+		2. Archestrator saga
+10. Kafka
+
+7. Spring Webflux (7 days)
+1. Introduction to Reactive world
+2. Project reactor
+3. Reactive Api (Specification)
+	1. Publisher
+	2. Subscriber
+	3. Processor
+	4. Back pressure
+4. WebFlux implementation	
+	1. Mono
+	2. Flux
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

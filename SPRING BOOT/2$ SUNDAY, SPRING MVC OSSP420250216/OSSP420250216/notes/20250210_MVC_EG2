@@ -1,0 +1,90 @@
+Annotation driven approach
+---------------------------
+1. How to configure DispatcherServlet as an servlet within the Web Application?
+Without web.xml the only way we can configure DispatcherServlet as an Servlet within our application is through programmatic approach only, since we dont have the sourcecode for the DispatcherServlet to write @WebServlet annotation
+-----------------------------------------------------------------------------------------------------------------------
+
+@Configuration
+class WebMvcConfig {}
+
+@Configuration
+class RootConfig {}
+
+
+
+// automatically by SpringServletContainerInitializer
+class AnnotationMvcWebApplicationInitializer implements WebApplicationInitializer {
+	public void onStartup(ServletContext servletContext) {
+		AnnotationConfigWebApplicationContext servletApplicationContext = null;
+		AnnotationConfigWebApplicationContext rootApplicationContext = null;
+		DispatcherServlet dispatcherServlet = null;
+		ContextLoaderListener listener = null;
+		
+		rootApplicationContext = new AnnotationConfigWebApplicationContext(); // empty
+		rootApplicationContext.register(RootConfig.class);
+		listener = new ContextLoaderListener(rootApplicationContext);
+		servletContext.addListener(listener);
+		
+		servletApplicationContext = new AnnotationConfigApplicationContext();
+		servletApplicationContext.register(WebMvcConfig.class);
+		dispatcherServlet = new DispatcherServlet(servletApplicationContext);
+		
+		ServletRegistration.Dynamic dynamic = servletContext.addServlet("dispatcher", dispatcherServlet);
+		dynamic.addMappings("*.htm");		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

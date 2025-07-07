@@ -1,0 +1,135 @@
+@Configuration
+class RootConfig {}
+
+@Configuration
+class WebConfig {}
+
+1. We need to configure the DispatcherServlet programmatically within our application since there is no web.xml
+
+class AW2WebApplicationInitializer implements WebApplicationInitializer {
+	public void onStartup(ServletContext servletContext) {
+		AnnotationConfigWebApplicationContext rootApplicationContext = null;
+		AnnotationConfigWebApplicationContext servletApplicationContext = null;
+		DispatcherServlet dispatcherServlet = null;
+		ContextLoaderListener contextLoaderListener = null;
+		
+		rootApplicationContext = new AnnotationConfigWebApplicationContext();
+		rootApplicationContext.register(RootConfig.class);
+		
+		contextLoaderListener = new ContextLoaderListener(rootApplicationContext);
+		servletContext.addListener(contextLoaderListener);
+		
+		servletApplicationContext = new AnnotationConfigWebApplicationContext();
+		servletApplicationContext.register(WebConfig.class);
+		
+		dispatcherServlet = new DispatcherServlet(servletApplicationContext);
+		ServletRegistration.Dynamic dynamic = servletContext.addServlet("dispatcher", dispatcherServlet);
+		dynamic.setLoadOnStartup(1);
+		dynamic.addMappings("*.htm");		
+	}
+}
+
+
+Looks like the above piece of code in registering the DispatcherServlet and ContextLoaderListener into the underlying servlet container seems to be same across any of the spring web mvc applications, the only differring aspects are the name of the Config classes and the url pattern we want to use in configuring the DispatcherServlet. In such case if everyone writes the same piece of code in registering the DispatcherServlet and ContextLoaderListener then we endup in writing the boiler-plate logic across all the spring mvc applications.
+	
+To overcome this problem spring has provided an base abstract class	"AbstractAnnotationConfigDispatcherServletInitializer"
+	
+abstract class AbstractAnnotationConfigDispatcherServletInitializer implements WebApplicationInitializer {
+	public void onStartup(ServletContext servletContext) {
+		AnnotationConfigWebApplicationContext rootApplicationContext = null;
+		AnnotationConfigWebApplicationContext servletApplicationContext = null;
+		DispatcherServlet dispatcherServlet = null;
+		ContextLoaderListener contextLoaderListener = null;
+		
+		rootApplicationContext = new AnnotationConfigWebApplicationContext();
+		rootApplicationContext.register(getRootConfigClasses());
+		
+		contextLoaderListener = new ContextLoaderListener(rootApplicationContext);
+		servletContext.addListener(contextLoaderListener);
+		
+		servletApplicationContext = new AnnotationConfigWebApplicationContext();
+		servletApplicationContext.register(getServletConfigClasses());
+		
+		dispatcherServlet = new DispatcherServlet(servletApplicationContext);
+		ServletRegistration.Dynamic dynamic = servletContext.addServlet("dispatcher", dispatcherServlet);
+		dynamic.setLoadOnStartup(1);
+		dynamic.addMappings(getServletMappings());	
+	}
+	
+	protected abstract Class<?>[] getRootConfigClasses();
+	protected abstract Class<?>[] getServletConfigClasses();
+	protected abstract String[] getServletMappings();
+}
+
+Now within our application we need to write the Initializer class instead of implementing from WebApplicationInitializer should extend from AbstractAnnotationConfigDispatcherServletInitializer and override #3 methods only
+	
+class AW2AnnotationConfigDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+	public Class<?>[] getRootConfigClasses() {
+		return new Class<?>[] {RootConfig.class};
+	}
+	
+	public Class<?>[] getServletConfigClasses() {
+		return new Class<?>[] {WebConfig.class};
+	}
+	
+	public String[] getServletMappings() {
+		return new String[] {"*.htm"};
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

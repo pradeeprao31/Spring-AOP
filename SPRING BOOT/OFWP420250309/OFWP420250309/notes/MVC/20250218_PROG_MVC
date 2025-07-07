@@ -1,0 +1,259 @@
+Handler Mapping
+---------------
+For each and every type of request in the application, the developer writes one controller class that should be used in handling/processing the request. But the DispatcherServlet is responsible for invoking a controller class for a request, to map the request to a corresponding controller the DispatcherServlet relies on HandlerMapping
+
+The developers can make use of HandlerMapping in mapping a request to the controller class by plugging-in his own implementations of the HandlerMapping, here developers can write their own algorithm implementation in considering various different aspects of the request like url, requestMethod, header parameters etc based on which they can map the request to an Controller.
+	
+The spring framework has provided an base interface called "HandlerMapping"
+	
+interface HandlerMapping {
+	HandlerExecutionChain getHandler(HttpServletRequest);
+}
+
+For this interface developers can write their own implementation logic in taking the request and mapping it to an appropriate controller class to be used in serving the request
+	
+For most of the applications, the way the request is mapped to a controller is same which could be simple enough in mapping a request to the controller based on URL pattern itself. To address such common needs in mapping the request to the Controller spring framework developers has provided multiple concrete implementations of the HandlerMapping interface, that can be directly consumed in our applications
+
+Programmatic controllers:
+1. SimpleUrlHandlerMapping
+2. BeanNameUrlHandlerMapping
+
+(deprecated and removed)
+3. ControllerClassNameHandlerMapping
+4. ControllerBeanNameHandlerMapping
+
+Annotation-driven controller programming:
+5. DefaultAnnotationHandlerMapping (deprecated/removed)
+6. RequestMappingHandlerMapping
+
+currently we have only #3 HandlerMapping implementations are available
+1. SimpleUrlHandlerMapping
+2. BeanNameUrlHandlerMapping
+3. RequestMappingHandlerMapping (annotation)
+	
+
+1. SimpleUrlHandlerMapping
+There are 2 URL Handler mappings are available, these URL Handler mappings maps the incoming request to a controller class based on the request URL, that is why these are named as URL Handler Mappings
+
+The SimpleUrlHandlerMapping is being considered as the most flexibile handle mapping available out of all programming handler mappings, because Simple (easily) we can map an URL of the request to an controller. The programmer himself can populate URLs and the corresponding controllers to whom the request should be dispatched to using mappings properties.
+	
+We have #2 advantages:
+1. centralized request to controller mappings, we can see all the possible requestURLs and the corresponding controllers to which those are mapped to at one-single place, so understanding and debugging the application becomes easy
+2. We can map one controller with various different URLs as well
+
+But the only problem is we end-up in writing more configuration in mapping each request to a controller explicitly
+
+2. BeanNameUrlHandlerMapping
+The BeanNameUrlHandlerMapping is the default handler mapping in a spring webmvc application. If we havent configured any HandlerMapping in our application, then spring mvc provides/configures BeanNameUrlHandlerMapping by default.
+	
+The WebApplicationContext implementations based ioc container takes care of instantiating the default implementations of many of the spring webmvc components when those are not configured in the application, which has to be mandatorily available within the mvc application to work. One such bean definition that is being instantiated is BeanNameUrlHandlerMapping
+
+The BeanNameUrlHandlerMapping by name we can understand the incoming URL of the request is matched with the controller beanName to identify a corresponding controller to be used in serving the request. So all that we need to do is configure the controller class as a bean with appropriate name that should be served as URL in accessing it
+		
+In a spring mvc application we can configure multiple HandlerMapping implementations as bean definitions, in case if multiple handler mappings are there, those works as chain of handler mappings which means always the DispatcherServlet will use the first handler mapping in the order of configurations available
+
+if the first handler mapping was not able to map the request to a controller, then it goes to the nextone in the chain to identify the controller
+
+When we are configuring multiple handler mappings, always the BeanNameUrlHandlerMapping should be the last one in the list. 
+------------------------------------------------------------------------------------------------------------------------------------
+ViewResolver
+-------------
+The ViewResolver is an interface that helps in mapping a viewNames returned by the controllers to actual view objects that should be used in rendering the view. By the help of ViewResolver we can decopule the controller logic from specific view technology allowing us to choose the implementations of view to be used without modifying the controller class
+	
+
+upon the controller returns an logic viewName, the DispatcherServlet goes to the ViewResolver asking him to provide the View implementation to be used in rendering the view. The ViewResolver identifies the View implementation class, instantiates the object of the View and returns to the DispatcherServlet, so that DispatcherServlet calls render method by passing viewName and data to be used in rendering it
+
+Spring Framework has provided several implementations of ViewResolver interface:
+	1. InternalResourceViewResolver = Resolvers the View names to jsps by default
+	2. BeanNameViewResolver 
+	3. XmlViewResolver
+	4. ResourceBundleViewResolver
+	5. FreeMakerViewResolver
+	6. VelocityViewResolver
+	7. ThymeleafViewResolver
+	etc
+	
+out of the above FreeMakerViewResolver, VelocityViewResolver and ThymeleafViewResolver are view technology specific view resolvers that should be used only when we are using the view technology as those frameworks/third-party libraries. Rest of all the view resolvers in the above list can be used for Jsp or any other view technology
+
+1. InternalResourceViewResolver
+InternalResourceViewResolver is the default view resolver that would be available in spring webmvc application if there is no view resolver explicitly configured for an application
+In a typical web application, the most common view technology being used is "Jsp", so the Spring Framework itself has provided an View implementation class JSTLView that has logic for rendering an Jsp page to the enduser based on the path we supplied
+
+JSTLView = takes Path of the resource as input in rendering the jsp/html page. It internally uses RequestDispatcher to render an jsp/html page only
+
+From the above we can understand to render any jsp pages of our application we need to use JSTLView class. So upon returning viewName by the controller, we need to use JSTLView implementation class to render the corresponding view in our application. So the job of instantiating the JSTLView class by populating the jsp path into it is done by InternalResourceViewResolver. So we can think of an InternalResourceViewResolver as "Jsp View Resolver" since it always instantiates JSTLView implementation class only
+	
+2. BeanNameViewResolver
+BeanNameViewResolver takes the viewName as an input and tries to locate a bean definition within the ioc container whose name is matching with viewName and returns that view bean definition object to ioc container.
+	
+3. ResourceBundleViewResolver
+The name itself tells, the ResourceBundleViewResolver supports resolving logical viewName into the view implementation class based on Locale of the user who is accessing the application. It takes multiple messageBundles of different locales as an input, in these message bundles we configure for each logical viewname what is the view implementation to be used for rendering the view
+
+based on the locale of the user, it picks the appropriate locale bundle look for the logical view and instantiates the viewimplementation class specified and returns to the DispatcherServlet
+-------------------------------------------------------------------------------------------------------------------------------------
+How to render pdf as a view to the user?
+Spring Framework has integration with third-party library itext to render pdf document as an output
+
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>itextpdf</artifactId>
+    <version>5.5.13.4</version>
+</dependency>
+
+The itext library has provided relevant objects like
+	1. Document  = a document represents an pdf document we want to generate
+	2. PdfWriter = represents an writer object used for writing the data onto the document if any
+	etc	
+using these objects we can construct the pdf document and generate the output. So we need to write the code for constructing these library objects inorder to use them in generating the pdf.
+	
+To ease the job of creating the pdf documents by constructing the library objects spring framework has provided an abstract class
+	
+abstract class AbstractPdfView implements View {
+	void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) {
+		// creating the itext library core objects Document and PdfWriter
+		// invoke buildPdfDocument(model, document, pdfWriter, req, resp);
+	}
+	abstract void buildPdfDocument(Map<String, ?> model, Document document, PdfWriter pdfWriter, HttpServletRequest request, HttpServletResponse response);
+}
+
+@Component("bus-passengers-pdf")
+class BusPassengersPdfView extends AbstractPdfView {
+	void buildPdfDocument(Map<String, ?> model, Document document, PdfWriter pdfWriter, HttpServletRequest request, HttpServletResponse response) {
+		// write the code for rendering the pdf document
+	}
+}
+
+How to render excel as a view?
+Spring Framework has integrated with apache poi api, in creating excel view. Similar to Pdf as discussed above when working with apache poi library there are few library objects we need to instantiate like WorkBook
+For this spring framework has provided AbstractXlsView. So we need to write our own View class extends from AbstractXlsView in creating the excel sheet
+
+@Component("bus-passengers-xls")
+class BusPassengersXlsView extends AbstractXlsView {
+	void buildExcelDocument(Map<String, ?> model, WorkBook workbook,HttpServletRequest request, HttpServletResponse response ) {
+		// write the code for generating xls sheet.
+	}
+}
+-------------------------------------------------------------------------------------------------------------------------------------
+Annotation-driven Controller programming
+----------------------------------------
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
